@@ -211,16 +211,19 @@ export function Scene({
     );
   }, [isPlaying, sceneIsReady, audio, duration, resetAudio]);
 
-  const resetScene = useCallback(() => {
+  const resetAnimation = useCallback(() => {
     usedCommandsRef.current.clear();
     setCurrentTime(0);
-    setIsPlaying(false);
-    isPlayingSceneRef.current = false;
     setShowDialogue(false);
     setDialogue(initDialogue);
     setCharacters(initCharacters);
     setBackground(initBackground);
   }, [initCharacters, initBackground]);
+
+  const resetScene = () => {
+    setIsPlaying(false);
+    isPlayingSceneRef.current = false;
+  };
 
   useEffect(() => {
     sceneSubject.attach(playScene);
@@ -264,10 +267,13 @@ export function Scene({
       }
     });
 
-    // resetScene only works if called AFTER the commands, otherwise the
-    // commands will undo the reset.
-    if (currentTime >= resetTime) resetScene();
-  }, [currentTime, resetTime, sortedCommands, resetScene]);
+    if (currentTime >= resetTime) {
+      // resetAnimation only works if called AFTER the commands, otherwise the
+      // commands will undo the reset.
+      resetAnimation();
+      resetScene();
+    }
+  }, [currentTime, resetTime, sortedCommands, resetAnimation]);
 
   useEffect(() => {
     return () => {
