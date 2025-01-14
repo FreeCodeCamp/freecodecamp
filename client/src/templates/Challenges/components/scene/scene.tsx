@@ -46,15 +46,25 @@ export function Scene({
       ? sToMs(audio.finishTimestamp - audio.startTimestamp)
       : Infinity;
 
-  const pause = () => {
+  const pauseAudio = () => {
     // Until the play() promise resolves, we can't pause the audio
     if (canPauseRef.current) audioRef.current.pause();
     canPauseRef.current = false;
+    clearTimeout(startTimerRef.current);
+    clearTimeout(finishTimerRef.current);
+  };
+
+  const pauseAnimation = () => {
+    setIsPlaying(false);
+    // @ts-expect-error cancelAnimationFrame accepts undefined, but TS doesn't
+    // know that
+    window.cancelAnimationFrame(animationRef.current);
   };
 
   const resetAudio = useCallback(() => {
-    pause();
+    pauseAudio();
     audioRef.current.currentTime = audio.startTimestamp || 0;
+    pausedAtRef.current = 0;
   }, [audio.startTimestamp]);
 
   // on mount
@@ -116,7 +126,8 @@ export function Scene({
   const [characters, setCharacters] = useState(initCharacters);
   const [dialogue, setDialogue] = useState(initDialogue);
   const [background, setBackground] = useState(initBackground);
-  const startRef = useRef<number>(0);
+  const startClocktimeRef = useRef<number>(0);
+  const pausedAtRef = useRef<number>(0);
   const startTimerRef = useRef<number>();
   const finishTimerRef = useRef<number>();
   const animationRef = useRef<number>();
@@ -155,9 +166,17 @@ export function Scene({
     setSceneIsReady(true);
   };
 
-  const playScene = useCallback(() => {
+  const handlePause = useCallback(() => {
+    isPlayingSceneRef.current = false;
+    pausedAtRef.current = currentTime;
+    pauseAudio();
+    pauseAnimation();
+  }, [currentTime]);
+
+  const handlePlay = useCallback(() => {
+    const pausedAt = pausedAtRef.current;
     const updateCurrentTime = () => {
-      const time = Date.now() - startRef.current;
+      const time = Date.now() - startClocktimeRef.current;
       setCurrentTime(time);
 
       if (isPlayingSceneRef.current) {
@@ -170,10 +189,25 @@ export function Scene({
     if (isPlaying || !sceneIsReady) return;
     setIsPlaying(true);
     isPlayingSceneRef.current = true;
-    startRef.current = Date.now();
+
+    // when we paused, the startRef was the clock time when we started and
+    // pausedAt was the currentTime (i.e. how long we've been playing). That
+    // means to resume we need to set the startRef to the current time minus
+    // the time we've already played.
+    startClocktimeRef.current = Date.now() - pausedAt;
+
     setShowDialogue(true);
 
     updateCurrentTime();
+
+    const audioStartDelay = sToMs(audio.startTime) - pausedAt;
+    const audioEndDelay = duration + audioStartDelay;
+    const isFinished = audioEndDelay <= 0;
+
+    if (isFinished) {
+      resetAudio();
+      return;
+    }
 
     // @ts-expect-error it's not a node timer
     startTimerRef.current = setTimeout(() => {
@@ -182,37 +216,46 @@ export function Scene({
           canPauseRef.current = true;
         });
       }
-    }, sToMs(audio.startTime));
+    }, audioStartDelay);
 
     // @ts-expect-error it's not a node timer
-    finishTimerRef.current = setTimeout(
-      () => {
-        if (duration !== Infinity) {
-          const endTimeStamp = sToMs(audio.finishTimestamp!); // it exists because duration is not Infinity
-          const audioCurrentTime = sToMs(audioRef.current.currentTime);
-          const remainingTime = endTimeStamp - audioCurrentTime;
-          // For some reason, despite the setTimeout resolving at the right
-          // time, the currentTime can be smaller than expected. That means
-          // that if we pause now it will cut off the last part.
-          if (remainingTime < 100) {
-            // 100ms is arbitrary and may need to be adjusted if people still
-            // notice the cut off
+    finishTimerRef.current = setTimeout(() => {
+      if (duration !== Infinity) {
+        const endTimeStamp = sToMs(audio.finishTimestamp!); // it exists because duration is not Infinity
+        const audioCurrentTime = sToMs(audioRef.current.currentTime);
+        const remainingTime = endTimeStamp - audioCurrentTime;
+        // For some reason, despite the setTimeout resolving at the right
+        // time, the currentTime can be smaller than expected. That means
+        // that if we pause now it will cut off the last part.
+        if (remainingTime < 100) {
+          // 100ms is arbitrary and may need to be adjusted if people still
+          // notice the cut off
 
+          resetAudio();
+        } else {
+          // @ts-expect-error it's not a node timer
+          finishTimerRef.current = setTimeout(() => {
             resetAudio();
-          } else {
-            // @ts-expect-error it's not a node timer
-            finishTimerRef.current = setTimeout(() => {
-              resetAudio();
-            }, remainingTime);
-          }
+          }, remainingTime);
         }
-      },
-      duration + sToMs(audio.startTime)
-    );
-  }, [isPlaying, sceneIsReady, audio, duration, resetAudio]);
+      }
+    }, audioEndDelay);
+  }, [audio, duration, isPlaying, resetAudio, sceneIsReady]);
+
+  const playScene = useCallback(
+    (eventType: 'play' | 'pause') => {
+      if (eventType === 'pause') {
+        handlePause();
+      } else if (eventType === 'play') {
+        handlePlay();
+      }
+    },
+    [handlePause, handlePlay]
+  );
 
   const resetAnimation = useCallback(() => {
     usedCommandsRef.current.clear();
+    startClocktimeRef.current = 0;
     setCurrentTime(0);
     setShowDialogue(false);
     setDialogue(initDialogue);
@@ -312,7 +355,7 @@ export function Scene({
                     name={character}
                     position={position}
                     opacity={opacity}
-                    isTalking={isTalking}
+                    isTalking={isPlaying && isTalking}
                     isBlinking={isPlaying}
                   />
                 );
@@ -330,16 +373,22 @@ export function Scene({
               </div>
             )}
 
-            {!isPlaying && (
+            {
               <div className='scene-start-screen'>
                 <button
                   className='scene-start-btn scene-play-btn'
-                  onClick={() => sceneSubject.notify()}
+                  onClick={() =>
+                    sceneSubject.notify(isPlaying ? 'pause' : 'play')
+                  }
                 >
-                  <img
-                    src={`${images}/play-button.png`}
-                    alt={t('buttons.play-scene')}
-                  />
+                  {isPlaying ? (
+                    'Imagine you see a pause button here'
+                  ) : (
+                    <img
+                      src={`${images}/play-button.png`}
+                      alt={t('buttons.play-scene')}
+                    />
+                  )}
                 </button>
 
                 {!alwaysShowDialogue && (
@@ -357,7 +406,7 @@ export function Scene({
                   </button>
                 )}
               </div>
-            )}
+            }
           </>
         )}
       </div>
