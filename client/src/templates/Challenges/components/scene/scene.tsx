@@ -46,6 +46,17 @@ export function Scene({
       ? sToMs(audio.finishTimestamp - audio.startTimestamp)
       : Infinity;
 
+  const pause = () => {
+    // Until the play() promise resolves, we can't pause the audio
+    if (canPauseRef.current) audioRef.current.pause();
+    canPauseRef.current = false;
+  };
+
+  const resetAudio = useCallback(() => {
+    pause();
+    audioRef.current.currentTime = audio.startTimestamp || 0;
+  }, [audio.startTimestamp]);
+
   // on mount
   useEffect(() => {
     const { current } = audioRef;
@@ -77,13 +88,10 @@ export function Scene({
 
     // on unmount
     return () => {
-      if (current) {
-        current.pause();
-        current.currentTime = 0;
-        current.removeEventListener('canplaythrough', audioLoaded);
-      }
+      resetAudio();
+      current.removeEventListener('canplaythrough', audioLoaded);
     };
-  }, [audioRef, duration, setup, commands]);
+  }, [duration, setup, commands, resetAudio]);
 
   const initBackground = setup.background;
 
@@ -147,12 +155,6 @@ export function Scene({
     setSceneIsReady(true);
   };
 
-  const pause = () => {
-    // Until the play() promise resolves, we can't pause the audio
-    if (canPauseRef.current) audioRef.current.pause();
-    canPauseRef.current = false;
-  };
-
   const playScene = useCallback(() => {
     const updateCurrentTime = () => {
       const time = Date.now() - startRef.current;
@@ -196,23 +198,21 @@ export function Scene({
             // 100ms is arbitrary and may need to be adjusted if people still
             // notice the cut off
 
-            pause();
+            resetAudio();
           } else {
             // @ts-expect-error it's not a node timer
             finishTimerRef.current = setTimeout(() => {
-              pause();
+              resetAudio();
             }, remainingTime);
           }
         }
       },
       duration + sToMs(audio.startTime)
     );
-  }, [isPlaying, sceneIsReady, audio, duration]);
+  }, [isPlaying, sceneIsReady, audio, duration, resetAudio]);
 
   const resetScene = useCallback(() => {
     usedCommandsRef.current.clear();
-    pause();
-    audioRef.current.currentTime = audio.startTimestamp || 0;
     setCurrentTime(0);
     setIsPlaying(false);
     isPlayingSceneRef.current = false;
@@ -220,7 +220,7 @@ export function Scene({
     setDialogue(initDialogue);
     setCharacters(initCharacters);
     setBackground(initBackground);
-  }, [audio, initCharacters, initBackground]);
+  }, [initCharacters, initBackground]);
 
   useEffect(() => {
     sceneSubject.attach(playScene);
