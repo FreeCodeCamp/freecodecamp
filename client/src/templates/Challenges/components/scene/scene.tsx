@@ -1,5 +1,12 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'; //, ReactElement } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback
+} from 'react';
 import { Col, Spacer } from '@freecodecamp/ui';
+import { isEmpty } from 'lodash-es';
 import { useTranslation } from 'react-i18next';
 import { FullScene } from '../../../../redux/prop-types';
 import { Loader } from '../../../../components/helpers';
@@ -10,9 +17,7 @@ import { SceneSubject } from './scene-subject';
 
 import './scene.css';
 
-const sToMs = (n: number) => {
-  return n * 1000;
-};
+const sToMs = (n: number) => n * 1000;
 
 const loadImage = (src: string | null) => {
   if (src) new Image().src = src;
@@ -31,24 +36,24 @@ export function Scene({
   const canPauseRef = useRef(false);
   const { setup, commands } = scene;
   const { audio, alwaysShowDialogue } = setup;
-  const { startTimestamp = null, finishTimestamp = null } = audio;
-
-  const hasTimestamps = startTimestamp !== null && finishTimestamp !== null;
-  const audioTimestamp = hasTimestamps ? `#t=${startTimestamp}` : '';
 
   const audioRef = useRef<HTMLAudioElement>(new Audio());
 
   // if there are timestamps, we use the difference between them as the duration
   // if not, we assume we're playing the whole audio file.
-  const duration = hasTimestamps
-    ? sToMs(finishTimestamp - startTimestamp)
-    : Infinity;
+  const duration =
+    audio.startTimestamp !== null && audio.finishTimestamp !== null
+      ? sToMs(audio.finishTimestamp - audio.startTimestamp)
+      : Infinity;
 
   // on mount
   useEffect(() => {
     const { current } = audioRef;
+    const { audio } = setup;
 
     if (current) {
+      const audioTimestamp =
+        duration !== Infinity ? `#t=${audio.startTimestamp}` : '';
       current.volume = 1;
       current.addEventListener('canplaythrough', audioLoaded);
       current.src = `${sounds}/${audio.filename}${audioTimestamp}`;
@@ -78,14 +83,7 @@ export function Scene({
         current.removeEventListener('canplaythrough', audioLoaded);
       }
     };
-  }, [
-    audioRef,
-    audio.filename,
-    audioTimestamp,
-    setup.background,
-    setup.characters,
-    commands
-  ]);
+  }, [audioRef, duration, setup, commands]);
 
   const initBackground = setup.background;
 
@@ -111,6 +109,39 @@ export function Scene({
   const [dialogue, setDialogue] = useState(initDialogue);
   const [background, setBackground] = useState(initBackground);
   const startRef = useRef<number>(0);
+  const startTimerRef = useRef<number>();
+  const finishTimerRef = useRef<number>();
+  const animationRef = useRef<number>();
+  const usedCommandsRef = useRef(new Set<number>());
+
+  const [currentTime, setCurrentTime] = useState(0);
+  // TODO: I'm using a ref so that the maybeStopAudio closure doesn't get stuck
+  // with the initial value of isPlaying. Given that we also have a state,
+  // isPlaying, it feels like there's a better way.
+  const isPlayingSceneRef = useRef(false);
+
+  // memoizing to prevent the useEffect from running on every render
+  const sortedCommands = useMemo(() => {
+    const normalized = commands.flatMap(command => {
+      const { startTime, finishTime, ...rest } = command;
+
+      const startCommand = {
+        ...rest,
+        time: sToMs(startTime),
+        isTalking: !!rest.dialogue
+      };
+      const finishCommand = finishTime
+        ? { ...rest, time: sToMs(finishTime), isTalking: false }
+        : null;
+
+      return finishCommand ? [startCommand, finishCommand] : [startCommand];
+    });
+    normalized.sort((a, b) => a.time - b.time);
+    return normalized;
+  }, [commands]);
+
+  // an extra 500ms at the end to let the characters fade out (CSS transition
+  const resetTime = sortedCommands.at(-1)!.time + 500;
 
   const audioLoaded = () => {
     setSceneIsReady(true);
@@ -122,132 +153,131 @@ export function Scene({
     canPauseRef.current = false;
   };
 
+  const playScene = useCallback(() => {
+    const updateCurrentTime = () => {
+      const time = Date.now() - startRef.current;
+      setCurrentTime(time);
+
+      if (isPlayingSceneRef.current) {
+        animationRef.current = window.requestAnimationFrame(updateCurrentTime);
+      }
+    };
+    // TODO: if we manage the playing state in another module, we should not
+    // need the early return here. It should not be possible for this to be
+    // called at all if the scene is already playing.
+    if (isPlaying || !sceneIsReady) return;
+    setIsPlaying(true);
+    isPlayingSceneRef.current = true;
+    startRef.current = Date.now();
+    setShowDialogue(true);
+
+    updateCurrentTime();
+
+    // @ts-expect-error it's not a node timer
+    startTimerRef.current = setTimeout(() => {
+      if (audioRef.current.paused) {
+        void audioRef.current.play().then(() => {
+          canPauseRef.current = true;
+        });
+      }
+    }, sToMs(audio.startTime));
+
+    // @ts-expect-error it's not a node timer
+    finishTimerRef.current = setTimeout(
+      () => {
+        if (duration !== Infinity) {
+          const endTimeStamp = sToMs(audio.finishTimestamp!); // it exists because duration is not Infinity
+          const audioCurrentTime = sToMs(audioRef.current.currentTime);
+          const remainingTime = endTimeStamp - audioCurrentTime;
+          // For some reason, despite the setTimeout resolving at the right
+          // time, the currentTime can be smaller than expected. That means
+          // that if we pause now it will cut off the last part.
+          if (remainingTime < 100) {
+            // 100ms is arbitrary and may need to be adjusted if people still
+            // notice the cut off
+
+            pause();
+          } else {
+            // @ts-expect-error it's not a node timer
+            finishTimerRef.current = setTimeout(() => {
+              pause();
+            }, remainingTime);
+          }
+        }
+      },
+      duration + sToMs(audio.startTime)
+    );
+  }, [isPlaying, sceneIsReady, audio, duration]);
+
+  const resetScene = useCallback(() => {
+    usedCommandsRef.current.clear();
+    pause();
+    audioRef.current.currentTime = audio.startTimestamp || 0;
+    setCurrentTime(0);
+    setIsPlaying(false);
+    isPlayingSceneRef.current = false;
+    setShowDialogue(false);
+    setDialogue(initDialogue);
+    setCharacters(initCharacters);
+    setBackground(initBackground);
+  }, [audio, initCharacters, initBackground]);
+
   useEffect(() => {
-    const playScene = () => {
-      // TODO: if we manage the playing state in another module, we should not
-      // need the early return here. It should not be possible for this to be
-      // called at all if the scene is already playing.
-      if (isPlaying || !sceneIsReady) return;
-      setIsPlaying(true);
-      setShowDialogue(true);
-
-      setTimeout(() => {
-        if (audioRef.current.paused) {
-          startRef.current = Date.now();
-          void audioRef.current.play().then(() => {
-            canPauseRef.current = true;
-          });
-        }
-        // if there are no timestamps, we can let the audio play to the end
-        if (hasTimestamps) maybeStopAudio();
-      }, sToMs(audio.startTime));
-
-      commands.forEach((command, commandIndex) => {
-        // Start command timeout
-        setTimeout(() => {
-          if (command.background) setBackground(command.background);
-
-          setDialogue(
-            command.dialogue
-              ? { ...command.dialogue, label: command.character }
-              : initDialogue
-          );
-
-          setCharacters(prevCharacters => {
-            const newCharacters = prevCharacters.map(character => {
-              if (character.character === command.character) {
-                return {
-                  ...character,
-                  position: command.position ?? character.position,
-                  opacity: command.opacity ?? character.opacity,
-                  isTalking: command.dialogue ? true : false
-                };
-              }
-              return character;
-            });
-            return newCharacters;
-          });
-        }, sToMs(command.startTime));
-
-        // Finish command timeout, only used when there's a dialogue
-        if (command.dialogue) {
-          setTimeout(
-            () => {
-              setCharacters(prevCharacters => {
-                const newCharacters = prevCharacters.map(character => {
-                  if (character.character === command.character) {
-                    return {
-                      ...character,
-                      isTalking: false
-                    };
-                  }
-                  return character;
-                });
-                return newCharacters;
-              });
-            },
-            sToMs(command.finishTime as number)
-          );
-        }
-
-        // Last command timeout
-        if (commandIndex === commands.length - 1) {
-          setTimeout(
-            resetScene,
-            // an extra 500ms at the end to let the characters fade out (CSS transition)
-            command.finishTime
-              ? sToMs(command.finishTime) + 500
-              : sToMs(command.startTime) + 500
-          );
-        }
-      });
-    };
-
-    const resetScene = () => {
-      const { current } = audioRef;
-      pause();
-      if (current) {
-        current.src = `${sounds}/${audio.filename}${audioTimestamp}`;
-        current.load();
-        current.currentTime = audio.startTimestamp || 0;
-      }
-
-      setIsPlaying(false);
-      setShowDialogue(false);
-      setDialogue(initDialogue);
-      setCharacters(initCharacters);
-      setBackground(initBackground);
-    };
-
-    // this function exists because we couldn't reliably stop the audio when
-    // playing only part of the audio file. So it would get cut off
-    function maybeStopAudio() {
-      const runningTime = Date.now() - startRef.current;
-
-      if (runningTime >= duration) {
-        pause();
-      } else {
-        window.requestAnimationFrame(maybeStopAudio);
-      }
-    }
-
     sceneSubject.attach(playScene);
-
     return () => {
       sceneSubject.detach(playScene);
     };
-  }, [
-    isPlaying,
-    duration,
-    sceneSubject,
-    sceneIsReady,
-    commands,
-    audio,
-    hasTimestamps,
-    initCharacters,
-    initBackground,
-    audioTimestamp
-  ]);
+  }, [playScene, sceneSubject]);
+
+  useEffect(() => {
+    if (isEmpty(sortedCommands)) return;
+
+    sortedCommands.forEach((command, commandIndex) => {
+      // Start command timeout
+      if (
+        currentTime > command.time &&
+        !usedCommandsRef.current.has(commandIndex)
+      ) {
+        usedCommandsRef.current.add(commandIndex);
+        if (command.background) setBackground(command.background);
+
+        setDialogue(
+          command.dialogue
+            ? { ...command.dialogue, label: command.character }
+            : initDialogue
+        );
+
+        setCharacters(prevCharacters => {
+          const newCharacters = prevCharacters.map(character => {
+            if (character.character === command.character) {
+              return {
+                ...character,
+                position: command.position ?? character.position,
+                opacity: command.opacity ?? character.opacity,
+                isTalking: command.isTalking
+              };
+            }
+            return character;
+          });
+          return newCharacters;
+        });
+      }
+    });
+
+    // resetScene only works if called AFTER the commands, otherwise the
+    // commands will undo the reset.
+    if (currentTime >= resetTime) resetScene();
+  }, [currentTime, resetTime, sortedCommands, resetScene]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(startTimerRef.current);
+      clearTimeout(finishTimerRef.current);
+      // @ts-expect-error cancelAnimationFrame accepts undefined, but TS doesn't
+      // know that
+      window.cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
 
   return (
     <Col lg={10} lgOffset={1} md={10} mdOffset={1}>
