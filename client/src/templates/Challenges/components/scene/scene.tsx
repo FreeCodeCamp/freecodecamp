@@ -211,7 +211,13 @@ export function Scene({
           // ensure that cleanup (i.e. resetAudio is called) )
           const effectiveDuration =
             duration === Infinity ? sToMs(audioRef.current.duration) : duration;
-          const audioEndDelay = effectiveDuration + audioStartDelay;
+
+          // If the delay is positive, the setTimeout will have already waited
+          // that amount of time. However, if it's negative, then the setTimeout
+          // has no delay and we need to account for that when calculating how
+          // much audio is left to play.
+          const effectiveStartDelay = Math.min(0, audioStartDelay);
+          const audioEndDelay = effectiveDuration + effectiveStartDelay;
 
           if (audioEndDelay < 0) {
             resetAudio();
