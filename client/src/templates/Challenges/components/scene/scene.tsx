@@ -266,6 +266,7 @@ export function Scene({
   const resetScene = () => {
     setIsPlaying(false);
     isPlayingSceneRef.current = false;
+    pausedAtRef.current = 0;
   };
 
   useEffect(() => {
