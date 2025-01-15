@@ -195,51 +195,47 @@ export function Scene({
     // means to resume we need to set the startRef to the current time minus
     // the time we've already played.
     startClocktimeRef.current = Date.now() - pausedAt;
-
     setShowDialogue(true);
-
     updateCurrentTime();
 
     const audioStartDelay = sToMs(audio.startTime) - pausedAt;
-    const audioEndDelay = duration + audioStartDelay;
-    const isFinished = audioEndDelay <= 0;
-
-    if (isFinished) {
-      resetAudio();
-      return;
-    }
 
     // @ts-expect-error it's not a node timer
     startTimerRef.current = setTimeout(() => {
       if (audioRef.current.paused) {
         void audioRef.current.play().then(() => {
           canPauseRef.current = true;
+
+          // If the duration is Infinity, that means the duration is simply the
+          // length of the file. However we need to actively stop the audio to
+          // ensure that cleanup (i.e. resetAudio is called) )
+          const effectiveDuration =
+            duration === Infinity ? sToMs(audioRef.current.duration) : duration;
+          const audioEndDelay = effectiveDuration + audioStartDelay;
+
+          // @ts-expect-error it's not a node timer
+          finishTimerRef.current = setTimeout(() => {
+            const endTimeStamp = sToMs(audio.finishTimestamp!); // it exists because duration is not Infinity
+            const audioCurrentTime = sToMs(audioRef.current.currentTime);
+            const remainingTime = endTimeStamp - audioCurrentTime;
+            // For some reason, despite the setTimeout resolving at the right
+            // time, the currentTime can be smaller than expected. That means
+            // that if we pause now it will cut off the last part.
+            if (remainingTime < 100) {
+              // 100ms is arbitrary and may need to be adjusted if people still
+              // notice the cut off
+
+              resetAudio();
+            } else {
+              // @ts-expect-error it's not a node timer
+              finishTimerRef.current = setTimeout(() => {
+                resetAudio();
+              }, remainingTime);
+            }
+          }, audioEndDelay);
         });
       }
     }, audioStartDelay);
-
-    // @ts-expect-error it's not a node timer
-    finishTimerRef.current = setTimeout(() => {
-      if (duration !== Infinity) {
-        const endTimeStamp = sToMs(audio.finishTimestamp!); // it exists because duration is not Infinity
-        const audioCurrentTime = sToMs(audioRef.current.currentTime);
-        const remainingTime = endTimeStamp - audioCurrentTime;
-        // For some reason, despite the setTimeout resolving at the right
-        // time, the currentTime can be smaller than expected. That means
-        // that if we pause now it will cut off the last part.
-        if (remainingTime < 100) {
-          // 100ms is arbitrary and may need to be adjusted if people still
-          // notice the cut off
-
-          resetAudio();
-        } else {
-          // @ts-expect-error it's not a node timer
-          finishTimerRef.current = setTimeout(() => {
-            resetAudio();
-          }, remainingTime);
-        }
-      }
-    }, audioEndDelay);
   }, [audio, duration, isPlaying, resetAudio, sceneIsReady]);
 
   const playScene = useCallback(
