@@ -213,6 +213,10 @@ export function Scene({
             duration === Infinity ? sToMs(audioRef.current.duration) : duration;
           const audioEndDelay = effectiveDuration + audioStartDelay;
 
+          if (audioEndDelay < 0) {
+            resetAudio();
+            return;
+          }
           // @ts-expect-error it's not a node timer
           finishTimerRef.current = setTimeout(() => {
             const endTimeStamp = sToMs(audio.finishTimestamp!); // it exists because duration is not Infinity
