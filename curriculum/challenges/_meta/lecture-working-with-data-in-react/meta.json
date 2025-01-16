@@ -8,7 +8,7 @@
   "challengeOrder": [
     {
       "id": "6734e3ceee2da4b0301719b7",
-      "title": "How Do You Pass Props from Parent to Child Component in React?"
+      "title": "How Do You Pass Props from a Parent Component to a Child Component in React?"
     },
     {
       "id": "673500abfe36cd015b67b1b7",
