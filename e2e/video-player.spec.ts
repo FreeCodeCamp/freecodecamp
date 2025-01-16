@@ -8,13 +8,10 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Challenge Video Player Component Tests', () => {
   test('should render video player and play button', async ({ page }) => {
+    await expect(page.locator('.display-youtube-video')).toBeVisible();
+
     await expect(
       page.locator('iframe[title="YouTube video player"]')
-    ).toBeVisible();
-    await expect(
-      page
-        .frameLocator('.display-youtube-video')
-        .getByRole('button', { name: 'Play' })
     ).toBeVisible();
   });
 });

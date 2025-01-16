@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Container, Col, Row, Button, Spacer } from '@freecodecamp/ui';
 import { isEqual } from 'lodash';
+import store from 'store';
+import { YouTubeEvent } from 'react-youtube';
 
 // Local Utilities
 import LearnLayout from '../../../components/layouts/learn';
@@ -127,7 +129,13 @@ const ShowGeneric = ({
   // video
   const [videoIsLoaded, setVideoIsLoaded] = useState(false);
 
-  const handleVideoIsLoaded = () => {
+  const handleVideoIsLoaded = (e: YouTubeEvent) => {
+    const playbackRate = Number(store.get('fcc-yt-playback-rate')) || 1;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const player = e.target;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    player.setPlaybackRate(playbackRate);
+
     setVideoIsLoaded(true);
   };
 
