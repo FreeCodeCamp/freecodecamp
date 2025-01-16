@@ -8,7 +8,7 @@ const keyToSection = {
   head: 'before-user-code',
   tail: 'after-user-code'
 };
-const supportedLanguages = ['js', 'css', 'html', 'jsx', 'py', 'ts'];
+const supportedLanguages = ['js', 'css', 'html', 'jsx', 'py', 'ts', 'json'];
 const longToShortLanguages = {
   javascript: 'js',
   typescript: 'ts',

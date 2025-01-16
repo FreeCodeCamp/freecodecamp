@@ -1,7 +1,7 @@
 // originally based off of https://github.com/gulpjs/vinyl
 import invariant from 'invariant';
 
-export type Ext = 'js' | 'html' | 'css' | 'jsx' | 'ts';
+export type Ext = 'js' | 'html' | 'css' | 'jsx' | 'ts' | 'json';
 
 export type ChallengeFile = {
   fileKey: string;

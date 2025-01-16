@@ -70,5 +70,19 @@ export const challengeFiles: ChallengeFile[] = [
     tail: '',
     editableRegionBoundaries: [],
     usesMultifileEditor: true,
+  },
+  {
+    id: '5',
+    contents: 'some json',
+    error: null,
+    ext: 'json',
+    head: '',
+    history: ['data.json'],
+    fileKey: 'datajson',
+    name: 'data',
+    seed: 'some json',
+    tail: '',
+    editableRegionBoundaries: [],
+    usesMultifileEditor: true,
   }
 ]
