@@ -27,6 +27,7 @@ import {
 import { createDeleteMsUsername } from '../middlewares/ms-username';
 import { validateSurvey, createDeleteUserSurveys } from '../middlewares/survey';
 import { deprecatedEndpoint } from '../utils/disabled-endpoints';
+import { getChallengeIdsForBlock } from '../utils/get-curriculum';
 
 const log = debugFactory('fcc:boot:user');
 const sendNonUserToHome = ifNoUserRedirectHome();
@@ -62,6 +63,7 @@ function bootUser(app) {
     deleteUserSurveys,
     postResetProgress
   );
+  api.delete('/account/reset-progress/', ifNoUser401, deleteProjectProgress);
   api.post(
     '/user/report-user/',
     ifNoUser401,
@@ -465,6 +467,113 @@ function postResetProgress(req, res, next) {
       return res.status(200).json({});
     }
   );
+}
+
+async function deleteProjectProgress(req, res, next) {
+  const { user } = req;
+  const { blocks } = req.body;
+
+  const toResetChallengeIds = [];
+  const undefinedBlocks = [];
+
+  const isSendBlocks = blocks && Array.isArray(blocks) && blocks.length > 0;
+  let isHasValidBlockToReset = false;
+  let isResetSuccessful = false;
+
+  if (isSendBlocks) {
+    for (const dashedBlockName of blocks) {
+      const blockChallengeIds = getChallengeIdsForBlock(dashedBlockName);
+      if (blockChallengeIds != undefined) {
+        toResetChallengeIds.push(...blockChallengeIds);
+      } else {
+        undefinedBlocks.push(dashedBlockName);
+      }
+    }
+
+    isHasValidBlockToReset = toResetChallengeIds.length > 0;
+
+    if (isHasValidBlockToReset) {
+      try {
+        const _updatedUser = await user.updateAttributes({
+          $pull: {
+            completedChallenges: { id: { $in: toResetChallengeIds } }
+          }
+        });
+        isResetSuccessful = true;
+      } catch (err) {
+        return next(err);
+      }
+    }
+  }
+
+  const resetResponse = buildResetResponse(
+    isSendBlocks,
+    isHasValidBlockToReset,
+    isResetSuccessful,
+    undefinedBlocks
+  );
+
+  return res.status(resetResponse.statusCode).json({
+    message: resetResponse.message,
+    devMessage: resetResponse.devMessage
+  });
+}
+
+function buildResetResponse(
+  isSendBlocks,
+  isHasValidBlockToReset,
+  isResetSuccessful,
+  undefinedBlocks
+) {
+  if (!isSendBlocks) {
+    return {
+      statusCode: 400,
+      message: 'flash.reset-progress.unexpected-error',
+      devMessage: 'No blocks were provided for the reset operation.'
+    };
+  }
+
+  let userMessageKeys = [];
+  let devMessageParts = [];
+  let statusCode;
+
+  if (isResetSuccessful) {
+    statusCode = 202;
+    userMessageKeys.push('flash.reset-progress.successful-reset');
+    devMessageParts.push(
+      'Challenges for the provided blocks have been successfully reset.'
+    );
+  } else if (!isHasValidBlockToReset) {
+    statusCode = 200;
+    userMessageKeys.push(
+      'flash.reset-progress.no-challenges-done-in-requested-blocks'
+    );
+    devMessageParts.push(
+      'No challenges were reset as none were completed in the requested blocks.'
+    );
+  } else {
+    statusCode = 404;
+    userMessageKeys.push('flash.reset-progress.unexpected-error');
+    devMessageParts.push(
+      'No valid challenges were found to reset for the requested blocks.'
+    );
+  }
+  if (undefinedBlocks && undefinedBlocks.length > 0) {
+    let blockList = undefinedBlocks.join(', ');
+    devMessageParts.push(
+      `Note: no challenges found for the following blocks: ${blockList}`
+    );
+  }
+
+  const message =
+    userMessageKeys.length > 1 ? userMessageKeys.join(' ') : userMessageKeys[0];
+  const devMessage = devMessageParts.join(' ');
+
+  return {
+    statusCode,
+    message,
+    devMessage
+  };
 }
 
 function createPostDeleteAccount(app) {

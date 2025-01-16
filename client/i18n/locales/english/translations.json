@@ -939,6 +939,11 @@
         "err-5": "Something went wrong trying to verify your trophy. Please check and try again.",
         "err-6": "It looks like your Microsoft account might be private. Set it to public and try again.",
         "verified": "Your trophy from Microsoft's learning platform was verified."
+      },
+      "reset-progress": {
+        "successful-reset": "Your progress has been successfully reset.",
+        "no-challenges-done-in-requested-blocks": "You have not completed any challenges in the requested blocks.",
+        "unexpected-error": "The operation did not proceed as expected."
       }
     },
     "survey": {
