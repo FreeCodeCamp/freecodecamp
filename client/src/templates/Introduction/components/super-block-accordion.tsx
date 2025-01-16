@@ -34,7 +34,7 @@ interface ModuleProps {
   totalSteps: number;
   completedSteps: number;
 }
-interface SuperBlockTreeViewProps {
+interface SuperBlockAccordionProps {
   challenges: ChallengeNode['challenge'][];
   superBlock: SuperBlocks;
   chosenBlock: string;
@@ -209,7 +209,7 @@ export const SuperBlockAccordion = ({
   superBlock,
   chosenBlock,
   completedChallengeIds
-}: SuperBlockTreeViewProps) => {
+}: SuperBlockAccordionProps) => {
   const { t } = useTranslation();
   const { allChapters } = useMemo(() => {
     const populateBlocks = (blocks: { dashedName: string }[]) =>
