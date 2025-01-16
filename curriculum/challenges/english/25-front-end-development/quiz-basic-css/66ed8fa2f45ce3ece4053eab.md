@@ -381,7 +381,7 @@ Gives animations to the page.
 
 ---
 
-Improves Search Emgine Optimization (SEO).
+Improves Search Engine Optimization (SEO).
 
 #### --answer--
 
