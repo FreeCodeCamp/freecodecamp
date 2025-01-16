@@ -65,7 +65,7 @@ import {
   makePrismCollapsible,
   setScrollbarArrowStyles
 } from '../utils/index';
-import { initializeMathJax } from '../../../utils/math-jax';
+import { initializeMathJax, isMathJaxAllowed } from '../../../utils/math-jax';
 import { getScrollbarWidth } from '../../../utils/scrollbar-width';
 import { isProjectBased } from '../../../utils/curriculum-layout';
 import envConfig from '../../../../config/env.json';
@@ -405,7 +405,9 @@ const Editor = (props: EditorProps): JSX.Element => {
       addContentChangeListener();
       resetAttempts();
       showEditableRegion(editor);
-      initializeMathJax();
+      if (isMathJaxAllowed(props.superBlock)) {
+        initializeMathJax();
+      }
     }
 
     const storedAccessibilityMode = () => {
@@ -769,6 +771,9 @@ const Editor = (props: EditorProps): JSX.Element => {
     const desc = document.createElement('div');
     const descContainer = document.createElement('div');
     descContainer.classList.add('description-container');
+    if (isMathJaxAllowed(props.superBlock)) {
+      descContainer.classList.add('mathjax-support');
+    }
     domNode.classList.add('editor-upper-jaw');
     domNode.appendChild(descContainer);
     if (isMobileLayout) descContainer.appendChild(createBreadcrumb());
