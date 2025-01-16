@@ -27,7 +27,8 @@ const baseProfileUI = {
   showName: false,
   showPoints: false,
   showPortfolio: false,
-  showTimeLine: false
+  showTimeLine: false,
+  showCareer: false
 };
 
 const profileUI = {
@@ -37,7 +38,8 @@ const profileUI = {
   showDonation: true,
   showLocation: true,
   showName: true,
-  showPortfolio: true
+  showPortfolio: true,
+  showCareer: true
 };
 
 const developerUserEmail = 'foo@bar.com';
