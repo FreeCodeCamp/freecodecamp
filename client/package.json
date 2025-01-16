@@ -72,7 +72,6 @@
     "final-form": "4.20.10",
     "gatsby": "3.15.0",
     "gatsby-cli": "3.15.0",
-    "gatsby-plugin-create-client-paths": "3.15.0",
     "gatsby-plugin-manifest": "3.15.0",
     "gatsby-plugin-pnpm": "^1.2.10",
     "gatsby-plugin-postcss": "4.15.0",
