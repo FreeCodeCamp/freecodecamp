@@ -1,6 +1,9 @@
-name: CI - Build Images
+name: Docker -- DOCR - API
 on:
   workflow_dispatch:
+  # push:
+  #   branches:
+  #     - 'prod-**'
 
 jobs:
   build:
