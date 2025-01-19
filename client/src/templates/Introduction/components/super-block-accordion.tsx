@@ -43,11 +43,20 @@ interface SuperBlockTreeViewProps {
 
 type Module = {
   dashedName: string;
+  id?: string; // ID is not available on exam and review
   comingSoon?: boolean;
   blocks: {
     dashedName: string;
   }[];
   moduleType?: string;
+};
+
+type Chapter = {
+  dashedName: string;
+  id?: string; // ID is not available on exam and review
+  comingSoon?: boolean;
+  modules: Module[];
+  chapterType?: string;
 };
 
 const modules = superBlockStructure.chapters.flatMap<Module>(
@@ -225,11 +234,13 @@ export const SuperBlockAccordion = ({
         };
       });
 
-    const allChapters = chapters.map(chapter => ({
+    const allChapters = chapters.map((chapter: Chapter) => ({
       name: chapter.dashedName,
+      id: chapter.id,
       comingSoon: chapter.comingSoon,
       modules: chapter.modules.map((module: Module) => ({
         name: module.dashedName,
+        id: module.id,
         comingSoon: module.comingSoon,
         blocks: populateBlocks(module.blocks)
       }))

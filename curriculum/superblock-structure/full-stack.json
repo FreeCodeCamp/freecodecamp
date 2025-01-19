@@ -2,18 +2,22 @@
   "chapters": [
     {
       "dashedName": "freecodecamp",
+      "id": "677eea0d303a620e7ca71cc7",
       "modules": [
         {
           "dashedName": "getting-started-with-freecodecamp",
+          "id": "677eea0d303a620e7ca71ccf",
           "blocks": [{ "dashedName": "lecture-welcome-to-freecodecamp" }]
         }
       ]
     },
     {
       "dashedName": "html",
+      "id": "677eea0d303a620e7ca71cc8",
       "modules": [
         {
           "dashedName": "basic-html",
+          "id": "677eea0d303a620e7ca71cd0",
           "blocks": [
             { "dashedName": "lecture-what-is-html" },
             { "dashedName": "workshop-cat-photo-app" },
@@ -29,6 +33,7 @@
         },
         {
           "dashedName": "semantic-html",
+          "id": "677eea0d303a620e7ca71cd1",
           "blocks": [
             { "dashedName": "lecture-importance-of-semantic-html" },
             { "dashedName": "workshop-blog-page" },
@@ -39,6 +44,7 @@
         },
         {
           "dashedName": "html-forms-and-tables",
+          "id": "677eea0d303a620e7ca71cd2",
           "blocks": [
             { "dashedName": "lecture-working-with-forms" },
             { "dashedName": "workshop-hotel-feedback-form" },
@@ -53,6 +59,7 @@
         },
         {
           "dashedName": "html-and-accessibility",
+          "id": "677eea0d303a620e7ca71cd3",
           "blocks": [
             {
               "dashedName": "lecture-importance-of-accessibility-and-good-html-structure"
@@ -77,9 +84,11 @@
     },
     {
       "dashedName": "css",
+      "id": "677eea0d303a620e7ca71cc9",
       "modules": [
         {
           "dashedName": "computer-basics",
+          "id": "677eea0d303a620e7ca71cd4",
           "blocks": [
             {
               "dashedName": "lecture-understanding-computer-internet-and-tooling-basics"
@@ -92,6 +101,7 @@
         },
         {
           "dashedName": "basic-css",
+          "id": "677eea0d303a620e7ca71cd5",
           "blocks": [
             { "dashedName": "lecture-what-is-css" },
             { "dashedName": "workshop-cafe-menu" },
@@ -111,6 +121,7 @@
         },
         {
           "dashedName": "design-for-developers",
+          "id": "677eea0d303a620e7ca71cd6",
           "blocks": [
             { "dashedName": "lecture-user-interface-design-fundamentals" },
             { "dashedName": "lecture-user-centered-design" },
@@ -121,6 +132,7 @@
         },
         {
           "dashedName": "absolute-and-relative-units",
+          "id": "677eea0d303a620e7ca71cd7",
           "blocks": [
             {
               "dashedName": "lecture-working-with-relative-and-absolute-units"
@@ -132,6 +144,7 @@
         },
         {
           "dashedName": "pseudo-classes-and-elements",
+          "id": "677eea0d303a620e7ca71cd8",
           "blocks": [
             {
               "dashedName": "lecture-working-with-pseudo-classes-and-pseudo-elements-in-css"
@@ -144,6 +157,7 @@
         },
         {
           "dashedName": "css-colors",
+          "id": "677eea0d303a620e7ca71cd9",
           "blocks": [
             { "dashedName": "lecture-working-with-colors-in-css" },
             { "dashedName": "workshop-colored-markers" },
@@ -154,6 +168,7 @@
         },
         {
           "dashedName": "styling-forms",
+          "id": "677eea0d303a620e7ca71cda",
           "blocks": [
             { "dashedName": "lecture-best-practices-for-styling-forms" },
             { "dashedName": "workshop-registration-form" },
@@ -164,6 +179,7 @@
         },
         {
           "dashedName": "css-box-model",
+          "id": "677eea0d303a620e7ca71cdb",
           "blocks": [
             {
               "dashedName": "lecture-working-with-css-transforms-overflow-and-filters"
@@ -176,6 +192,7 @@
         },
         {
           "dashedName": "css-flexbox",
+          "id": "677eea0d303a620e7ca71cdc",
           "blocks": [
             { "dashedName": "lecture-working-with-css-flexbox" },
             { "dashedName": "workshop-flexbox-photo-gallery" },
@@ -186,6 +203,7 @@
         },
         {
           "dashedName": "css-typography",
+          "id": "677eea0d303a620e7ca71cdd",
           "blocks": [
             { "dashedName": "lecture-working-with-css-fonts" },
             { "dashedName": "workshop-nutritional-label" },
@@ -196,6 +214,7 @@
         },
         {
           "dashedName": "css-and-accessibility",
+          "id": "677eea0d303a620e7ca71cde",
           "blocks": [
             {
               "dashedName": "lecture-best-practices-for-accessibility-and-css"
@@ -208,6 +227,7 @@
         },
         {
           "dashedName": "attribute-selectors",
+          "id": "677eea0d303a620e7ca71cdf",
           "blocks": [
             { "dashedName": "lecture-working-with-attribute-selectors" },
             { "dashedName": "workshop-balance-sheet" },
@@ -218,6 +238,7 @@
         },
         {
           "dashedName": "css-positioning",
+          "id": "677eea0d303a620e7ca71ce0",
           "blocks": [
             {
               "dashedName": "lecture-understanding-how-to-work-with-floats-and-positioning-in-css"
@@ -230,6 +251,7 @@
         },
         {
           "dashedName": "responsive-design",
+          "id": "677eea0d303a620e7ca71ce1",
           "blocks": [
             {
               "dashedName": "lecture-best-practices-for-responsive-web-design"
@@ -242,6 +264,7 @@
         },
         {
           "dashedName": "css-variables",
+          "id": "677eea0d303a620e7ca71ce2",
           "blocks": [
             { "dashedName": "lecture-working-with-css-variables" },
             { "dashedName": "workshop-city-skyline" },
@@ -252,6 +275,7 @@
         },
         {
           "dashedName": "css-grid",
+          "id": "677eea0d303a620e7ca71ce3",
           "blocks": [
             { "dashedName": "lecture-working-with-css-grid" },
             { "dashedName": "workshop-magazine" },
@@ -264,6 +288,7 @@
         },
         {
           "dashedName": "css-animations",
+          "id": "677eea0d303a620e7ca71ce4",
           "blocks": [
             { "dashedName": "lecture-animations-and-accessibility" },
             { "dashedName": "workshop-ferris-wheel" },
@@ -289,15 +314,18 @@
     },
     {
       "dashedName": "javascript",
+      "id": "677eea0d303a620e7ca71cca",
       "modules": [
         {
           "dashedName": "code-editors",
+          "id": "677eea0d303a620e7ca71ce5",
           "blocks": [
             { "dashedName": "lecture-working-with-code-editors-and-ides" }
           ]
         },
         {
           "dashedName": "javascript-variables-and-strings",
+          "id": "677eea0d303a620e7ca71ce6",
           "blocks": [
             { "dashedName": "lecture-introduction-to-javascript" },
             { "dashedName": "workshop-greeting-bot" },
@@ -315,6 +343,7 @@
         },
         {
           "dashedName": "javascript-booleans-and-numbers",
+          "id": "677eea0d303a620e7ca71ce7",
           "blocks": [
             {
               "dashedName": "lecture-working-with-numbers-booleans-and-the-math-object"
@@ -335,6 +364,7 @@
         },
         {
           "dashedName": "javascript-functions",
+          "id": "677eea0d303a620e7ca71ce8",
           "blocks": [
             { "dashedName": "lecture-working-with-functions" },
             { "dashedName": "workshop-calculator" },
@@ -347,6 +377,7 @@
         },
         {
           "dashedName": "javascript-arrays",
+          "id": "677eea0d303a620e7ca71ce9",
           "blocks": [
             { "dashedName": "lecture-working-with-arrays" },
             { "dashedName": "workshop-shopping-list" },
@@ -358,6 +389,7 @@
         },
         {
           "dashedName": "javascript-objects",
+          "id": "677eea0d303a620e7ca71cea",
           "blocks": [
             { "dashedName": "lecture-working-with-objects" },
             { "dashedName": "workshop-recipe-tracker" },
@@ -368,6 +400,7 @@
         },
         {
           "dashedName": "javascript-loops",
+          "id": "677eea0d303a620e7ca71ceb",
           "blocks": [
             { "dashedName": "lecture-working-with-loops" },
             { "dashedName": "workshop-sentence-analyzer" },
@@ -378,6 +411,7 @@
         },
         {
           "dashedName": "review-javascript-fundamentals",
+          "id": "677eea0d303a620e7ca71cec",
           "blocks": [
             {
               "dashedName": "lecture-understanding-core-javascript-fundamentals"
@@ -396,6 +430,7 @@
         },
         {
           "dashedName": "higher-order-functions-and-callbacks",
+          "id": "677eea0d303a620e7ca71ced",
           "blocks": [
             {
               "dashedName": "lecture-working-with-higher-order-functions-and-callbacks"
@@ -408,6 +443,7 @@
         },
         {
           "dashedName": "dom-manipulation-and-events",
+          "id": "677eea0d303a620e7ca71cee",
           "blocks": [
             {
               "dashedName": "lecture-working-with-the-dom-click-events-and-web-apis"
@@ -435,6 +471,7 @@
         },
         {
           "dashedName": "debugging-javascript",
+          "id": "677eea0d303a620e7ca71cef",
           "blocks": [
             { "dashedName": "lecture-debugging-techniques" },
             { "dashedName": "lab-random-background-color-changer" },
@@ -444,6 +481,7 @@
         },
         {
           "dashedName": "basic-regex",
+          "id": "677eea0d303a620e7ca71cf0",
           "blocks": [
             { "dashedName": "lecture-working-with-regular-expressions" },
             { "dashedName": "workshop-spam-filter" },
@@ -455,6 +493,7 @@
         },
         {
           "dashedName": "form-validation",
+          "id": "677eea0d303a620e7ca71cf1",
           "blocks": [
             { "dashedName": "lecture-understanding-form-validation" },
             { "dashedName": "workshop-calorie-counter" },
@@ -465,6 +504,7 @@
         },
         {
           "dashedName": "javascript-dates",
+          "id": "677eea0d303a620e7ca71cf2",
           "blocks": [
             { "dashedName": "lecture-working-with-dates" },
             { "dashedName": "lab-date-conversion" },
@@ -474,6 +514,7 @@
         },
         {
           "dashedName": "audio-and-video-events",
+          "id": "677eea0d303a620e7ca71cf3",
           "blocks": [
             { "dashedName": "lecture-working-with-audio-and-video" },
             { "dashedName": "workshop-music-player" },
@@ -484,6 +525,7 @@
         },
         {
           "dashedName": "maps-and-sets",
+          "id": "677eea0d303a620e7ca71cf4",
           "blocks": [
             { "dashedName": "lecture-working-with-maps-and-sets" },
             { "dashedName": "workshop-plant-nursery-catalog" },
@@ -494,6 +536,7 @@
         },
         {
           "dashedName": "localstorage-and-crud-operations",
+          "id": "677eea0d303a620e7ca71cf5",
           "blocks": [
             {
               "dashedName": "lecture-working-with-client-side-storage-and-crud-operations"
@@ -506,6 +549,7 @@
         },
         {
           "dashedName": "classes-and-the-this-keyword",
+          "id": "677eea0d303a620e7ca71cf6",
           "blocks": [
             {
               "dashedName": "lecture-understanding-how-to-work-with-classes-in-javascript"
@@ -519,6 +563,7 @@
         },
         {
           "dashedName": "recursion",
+          "id": "677eea0d303a620e7ca71cf7",
           "blocks": [
             {
               "dashedName": "lecture-understanding-recursion-and-the-call-stack"
@@ -531,6 +576,7 @@
         },
         {
           "dashedName": "functional-programming",
+          "id": "677eea0d303a620e7ca71cf8",
           "blocks": [
             { "dashedName": "lecture-understanding-functional-programming" },
             { "dashedName": "workshop-recipe-ingredient-converter" },
@@ -541,6 +587,7 @@
         },
         {
           "dashedName": "asynchronous-javascript",
+          "id": "677eea0d303a620e7ca71cf9",
           "blocks": [
             { "dashedName": "lecture-understanding-asynchronous-programming" },
             { "dashedName": "workshop-fcc-authors-page" },
@@ -566,9 +613,11 @@
 
     {
       "dashedName": "frontend-libraries",
+      "id": "677eea0d303a620e7ca71ccb",
       "modules": [
         {
           "dashedName": "react-fundamentals",
+          "id": "677eea0d303a620e7ca71cfa",
           "blocks": [
             {
               "dashedName": "lecture-introduction-to-javascript-libraries-and-frameworks"
@@ -584,6 +633,7 @@
         },
         {
           "dashedName": "react-state-hooks-and-routing",
+          "id": "677eea0d303a620e7ca71cfb",
           "comingSoon": true,
           "blocks": [
             { "dashedName": "quiz-react-state-and-hooks" },
@@ -592,6 +642,7 @@
         },
         {
           "dashedName": "performance",
+          "id": "677eea0d303a620e7ca71cfc",
           "comingSoon": true,
           "blocks": [
             { "dashedName": "review-web-performance" },
@@ -600,6 +651,7 @@
         },
         {
           "dashedName": "css-libraries-and-frameworks",
+          "id": "677eea0d303a620e7ca71cfd",
           "comingSoon": true,
           "blocks": [
             { "dashedName": "review-css-libraries-and-frameworks" },
@@ -608,6 +660,7 @@
         },
         {
           "dashedName": "testing",
+          "id": "677eea0d303a620e7ca71cfe",
           "comingSoon": true,
           "blocks": [
             { "dashedName": "review-testing" },
@@ -616,6 +669,7 @@
         },
         {
           "dashedName": "typescript-fundamentals",
+          "id": "677eea0d303a620e7ca71cff",
           "comingSoon": true,
           "blocks": [
             { "dashedName": "review-typescript" },
@@ -638,6 +692,7 @@
     },
     {
       "dashedName": "relational-databases",
+      "id": "677eea0d303a620e7ca71ccc",
       "comingSoon": true,
       "modules": [
         {
@@ -705,11 +760,13 @@
     },
     {
       "dashedName": "backend-javascript",
+      "id": "677eea0d303a620e7ca71ccd",
       "comingSoon": true,
       "modules": []
     },
     {
       "dashedName": "python",
+      "id": "677eea0d303a620e7ca71cce",
       "comingSoon": true,
       "modules": []
     },
