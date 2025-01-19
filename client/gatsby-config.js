@@ -39,18 +39,6 @@ module.exports = {
       }
     },
     {
-      resolve: 'gatsby-plugin-create-client-paths',
-      options: {
-        prefixes: [
-          '/certification/*',
-          '/unsubscribed/*',
-          '/user/*',
-          '/settings/*',
-          '/n/*'
-        ]
-      }
-    },
-    {
       resolve: require.resolve(
         '../tools/client-plugins/gatsby-source-challenges'
       ),
