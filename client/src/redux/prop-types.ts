@@ -130,8 +130,8 @@ interface SetupCharacter {
 interface SetupAudio {
   filename: string;
   startTime: number;
-  startTimestamp?: number;
-  finishTimestamp?: number;
+  startTimestamp: number | null;
+  finishTimestamp: number | null;
 }
 
 interface SceneSetup {
