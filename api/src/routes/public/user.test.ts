@@ -72,6 +72,7 @@ const testUserData: Prisma.userCreateInput = {
   githubProfile: 'github.com/foobar',
   website: 'https://www.freecodecamp.org',
   donationEmails: ['an@add.ress'],
+  career: [],
   portfolio: [
     {
       description: 'A portfolio',
@@ -124,6 +125,7 @@ const lockedProfileUI = {
   showName: false,
   showPoints: false,
   showPortfolio: false,
+  showCareer: false,
   showTimeLine: false
 };
 
@@ -206,6 +208,7 @@ const publicUserData = {
   partiallyCompletedChallenges: [{ id: '123', completedDate: 123 }],
   picture: testUserData.picture,
   points: 2,
+  career: testUserData.career,
   portfolio: testUserData.portfolio,
   profileUI: testUserData.profileUI,
   savedChallenges: testUserData.savedChallenges,
@@ -244,6 +247,7 @@ describe('userRoutes', () => {
         showName: true,
         showPoints: true,
         showPortfolio: true,
+        showCareer: true,
         showTimeLine: true
       };
       const users = [profilelessUsername, lockedUsername, publicUsername];
@@ -483,6 +487,7 @@ describe('get-public-profile helpers', () => {
       location: 'location',
       joinDate: 'joinDate',
       name: 'name',
+      career: [],
       points: 2,
       portfolio: [
         {
@@ -503,7 +508,8 @@ describe('get-public-profile helpers', () => {
         showName: true,
         showPoints: true,
         showPortfolio: true,
-        showTimeLine: true
+        showTimeLine: true,
+        showCareer: true
       }
     };
 

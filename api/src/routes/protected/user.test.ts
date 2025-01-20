@@ -140,6 +140,7 @@ const lockedProfileUI = {
   showName: false,
   showPoints: false,
   showPortfolio: false,
+  showCareer: false,
   showTimeLine: false
 };
 
@@ -216,6 +217,7 @@ const publicUserData = {
       }
     }
   ],
+  career: [],
   completedExams: testUserData.completedExams,
   completedSurveys: [], // TODO: add surveys
   quizAttempts: testUserData.quizAttempts,
@@ -724,6 +726,7 @@ describe('userRoutes', () => {
           completedSurveys: [],
           partiallyCompletedChallenges: [],
           portfolio: [],
+          career: [],
           savedChallenges: [],
           quizAttempts: [],
           yearsTopContributor: [],
