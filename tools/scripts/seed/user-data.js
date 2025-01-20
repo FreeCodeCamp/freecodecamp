@@ -12250,6 +12250,14 @@ module.exports.fullyCertifiedUser = {
       id: '671144cdcc01d73f7dd79dc9',
       challengeType: 0,
       files: []
+    },
+    {
+      completedDate: 1729240849345,
+      id: '6734ddabad59e593a49afafe'
+    },
+    {
+      completedDate: 1729240849345,
+      id: '6734e2c5780912abd874e79c'
     }
   ],
   completedExams: [
