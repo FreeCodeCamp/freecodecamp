@@ -32,7 +32,7 @@ export function checkPrerequisites(
 
 export type UserExam = Omit<
   EnvExam,
-  'questionSets' | 'config' | 'id' | 'prerequisites'
+  'questionSets' | 'config' | 'id' | 'prerequisites' | 'deprecated'
 > & {
   config: Omit<EnvExam['config'], 'tags' | 'questionSets'>;
   questionSets: (Omit<EnvQuestionSet, 'questions'> & {

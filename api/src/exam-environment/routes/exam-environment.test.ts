@@ -570,7 +570,6 @@ describe('/exam-environment/', () => {
           'exam-environment-authorization-token',
           examEnvironmentAuthorizationToken
         );
-        expect(res.status).toBe(200);
 
         expect(res.body).toStrictEqual({
           exams: [
@@ -586,6 +585,26 @@ describe('/exam-environment/', () => {
             }
           ]
         });
+
+        expect(res.status).toBe(200);
+      });
+
+      it('should not return any deprecated exams', async () => {
+        await fastifyTestInstance.prisma.envExam.update({
+          where: { id: mock.examId },
+          data: { deprecated: true }
+        });
+
+        const res = await superGet('/exam-environment/exams').set(
+          'exam-environment-authorization-token',
+          examEnvironmentAuthorizationToken
+        );
+
+        expect(res.body).toStrictEqual({
+          exams: []
+        });
+
+        expect(res.status).toBe(200);
       });
     });
   });
@@ -675,7 +694,7 @@ describe('/exam-environment/', () => {
       });
     });
 
-    describe('GET /exam-environment/exams', () => {
+    describe('GET /exam-environment/;', () => {
       it('should return 403', async () => {
         const res = await superGet('/exam-environment/exams').set(
           'exam-environment-authorization-token',

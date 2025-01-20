@@ -557,6 +557,9 @@ async function getExams(
 ) {
   const user = req.user!;
   const exams = await this.prisma.envExam.findMany({
+    where: {
+      deprecated: false
+    },
     select: {
       id: true,
       config: true,

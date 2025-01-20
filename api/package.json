@@ -83,6 +83,8 @@
     "postinstall": "prisma generate",
     "lint": "cd .. && eslint api/src --max-warnings 0",
     "generate-exams": "tsx src/exam-environment/generate/index.ts",
+    "deprecate-exam": "tsx src/exam-environment/generate/deprecate.ts",
+    "insert-exam": "tsx src/exam-environment/generate/insert.ts",
     "seed:env-exam": "tsx src/exam-environment/seed/index.ts"
   },
   "version": "0.0.1"

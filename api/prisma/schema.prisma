@@ -166,6 +166,8 @@ model EnvExam {
   config        EnvConfig
   /// ObjectIds for required challenges/blocks to take the exam
   prerequisites String[]         @db.ObjectId
+  /// If `deprecated`, the exam should no longer be considered for users
+  deprecated    Boolean
 
   // Relations
   generatedExams EnvGeneratedExam[]
