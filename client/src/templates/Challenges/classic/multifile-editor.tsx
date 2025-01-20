@@ -18,6 +18,7 @@ export type VisibleEditors = {
   indexjsx?: boolean;
   stylescss?: boolean;
   scriptjs?: boolean;
+  datajson?: boolean;
   indexts?: boolean;
   mainpy?: boolean;
 };
@@ -76,6 +77,7 @@ const MultifileEditor = (props: MultifileEditorProps) => {
       stylescss,
       indexhtml,
       scriptjs,
+      datajson,
       indexts,
       indexjsx,
       mainpy
@@ -105,6 +107,7 @@ const MultifileEditor = (props: MultifileEditorProps) => {
   if (indexjsx) editorKeys.push('indexjsx');
   if (mainpy) editorKeys.push('mainpy');
   if (indexts) editorKeys.push('indexts');
+  if (datajson) editorKeys.push('datajson');
 
   const editorAndSplitterKeys = editorKeys.reduce((acc: string[] | [], key) => {
     if (acc.length === 0) {

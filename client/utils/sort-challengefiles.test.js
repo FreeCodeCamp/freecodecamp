@@ -14,7 +14,7 @@ describe('sort-files', () => {
       expect(sorted.length).toEqual(expected.length);
     });
 
-    it('should sort the objects into html, css, jsx, js, ts order', () => {
+    it('should sort the objects into html, css, jsx, js, ts, json order', () => {
       const sorted = sortChallengeFiles(challengeFiles);
       const sortedKeys = sorted.map(({ fileKey }) => fileKey);
       const expected = [
@@ -22,7 +22,8 @@ describe('sort-files', () => {
         'stylescss',
         'indexjsx',
         'scriptjs',
-        'indexts'
+        'indexts',
+        'datajson'
       ];
       expect(sortedKeys).toStrictEqual(expected);
     });
