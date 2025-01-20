@@ -13,7 +13,26 @@ export const statusRoute: FastifyPluginCallbackTypebox = (
   _options,
   done
 ) => {
-  fastify.get('/status/ping', async (_req, _reply) => {
+  fastify.get('/status/ping', async (req, _reply) => {
+    const url = req.url || 'URL not found';
+    const reqId = req.id || 'REQ_ID not found';
+    const headers = req.headers || 'HEADERS not found';
+    const ip =
+      req.headers['x-forwarded-for'] ||
+      req.headers['x-real-ip'] ||
+      req.ip ||
+      'IP not found';
+    const params = req.params || 'PARAMS not found';
+
+    fastify.log
+      .child({
+        URL: url,
+        REQ_ID: reqId,
+        HEADERS: headers,
+        IP: ip,
+        PARAMS: params
+      })
+      .debug('returning a ping');
     return { msg: 'pong' };
   });
 

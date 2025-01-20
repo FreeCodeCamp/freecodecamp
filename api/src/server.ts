@@ -3,6 +3,8 @@
 // is not included in the build (it's a dev dependency).
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./reset.d.ts" />
+import { randomBytes } from 'crypto';
+import { FastifyRequest } from 'fastify';
 import { build } from './app';
 import {
   FREECODECAMP_NODE_ENV,
@@ -11,25 +13,45 @@ import {
   PORT
 } from './utils/env';
 
+const requestSerializer = (request: FastifyRequest) => ({
+  method: request.method,
+  url: request.url,
+  ip: request.headers['x-forwarded-for']?.toString() || request.ip,
+  hostname: request.hostname,
+  remoteAddress: request.headers['x-forwarded-for']?.toString() || request.ip,
+  remotePort: request.socket.remotePort
+});
+
 const envToLogger = {
   development: {
     transport: {
       target: 'pino-pretty',
       options: {
+        singleLine: true,
         translateTime: 'HH:MM:ss Z',
         ignore: 'pid,hostname'
       }
     },
-    level: FCC_API_LOG_LEVEL || 'info'
+    level: FCC_API_LOG_LEVEL || 'info',
+    serializers: {
+      req: requestSerializer
+    }
   },
   production: {
-    level: FCC_API_LOG_LEVEL || 'info'
-  },
-  test: undefined
+    level: FCC_API_LOG_LEVEL || 'info',
+    serializers: {
+      req: requestSerializer
+    }
+  }
 };
 
 const start = async () => {
-  const fastify = await build({ logger: envToLogger[FREECODECAMP_NODE_ENV] });
+  const fastify = await build({
+    logger: envToLogger[FREECODECAMP_NODE_ENV] ?? true,
+    genReqId: () => randomBytes(8).toString('hex'),
+    disableRequestLogging: true
+    // trustProxy: true // Trust X-Forwarded-* headers
+  });
   try {
     const port = Number(PORT);
     fastify.log.info(`Starting server on port ${port}`);

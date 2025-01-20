@@ -6,7 +6,7 @@ import { LogLevel } from 'fastify';
 const envPath = path.resolve(__dirname, '../../../.env');
 const { error } = config({ path: envPath });
 
-if (error) {
+if (error && process.env.FREECODECAMP_NODE_ENV !== 'production') {
   console.warn(`
   ----------------------------------------------------
   Warning: .env file not found.

@@ -94,7 +94,18 @@ export const mobileAuth0Routes: FastifyPluginAsync = async (
     max: 10,
     enableDraftSpec: true, // ratelimit-* instead of x-ratelimit-*
     keyGenerator: req => {
-      return (req.headers['x-forwarded-for'] as string) || 'localhost';
+      const clientIp =
+        (req.headers['x-forwarded-for'] as string) || 'localhost';
+      fastify.log.debug({
+        msg: 'Rate limit key generated',
+        clientIp,
+        directIp: req.ip,
+        headers: {
+          'x-forwarded-for': req.headers['x-forwarded-for'],
+          'x-real-ip': req.headers['x-real-ip']
+        }
+      });
+      return clientIp;
     },
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     store: Store
@@ -105,15 +116,29 @@ export const mobileAuth0Routes: FastifyPluginAsync = async (
   fastify.addHook('onRequest', fastify.redirectIfSignedIn);
 
   fastify.get('/mobile-login', async (req, reply) => {
+    fastify.log.debug({
+      msg: 'Mobile login attempt',
+      clientIp: req.headers['x-forwarded-for'] || req.ip,
+      headers: {
+        'x-forwarded-for': req.headers['x-forwarded-for'],
+        'x-real-ip': req.headers['x-real-ip']
+      }
+    });
+
     const email = await getEmailFromAuth0(req);
 
     if (!email) {
+      fastify.log.debug('Auth0 email fetch failed');
       return reply.status(401).send({
         message: 'We could not log you in, please try again in a moment.',
         type: 'danger'
       });
     }
+
+    fastify.log.debug({ msg: 'Auth0 email received', email });
+
     if (!isEmail(email)) {
+      fastify.log.debug({ msg: 'Invalid email format', email });
       return reply.status(400).send({
         message: 'The email is incorrectly formatted',
         type: 'danger'
@@ -121,6 +146,7 @@ export const mobileAuth0Routes: FastifyPluginAsync = async (
     }
 
     const { id } = await findOrCreateUser(fastify, email);
+    fastify.log.debug({ msg: 'User found/created', userId: id, email });
 
     reply.setAccessTokenCookie(createAccessToken(id));
   });
